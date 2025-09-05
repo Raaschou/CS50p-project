@@ -1,5 +1,5 @@
 import csv
-import matplotlib.pyplot as plt
+import matplotlib as plt
 import numpy as np
 
 def main():
@@ -14,7 +14,9 @@ def main():
 
 def get_info(netflix_view_hist):
     # Use DictReader to extract data from csv file
-    with open(netflix_view_hist) as csvfile:
+    # Encoding is workaround for error, that was not thrown when using cs50.dev
+    with open(netflix_view_hist, encoding="cp437") as csvfile:
+        
         reader = csv.DictReader(csvfile)
 
         # Initialise titles and dates and append all
@@ -32,6 +34,7 @@ def get_info(netflix_view_hist):
 # Use function to get view by month or year, maybe days
 def parse_date(date):
     month, day, year = date.split("/")
+    return f"{year}-{month}-{day}"
 
 
 def plot_shows_watched_by_month():
