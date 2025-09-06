@@ -1,5 +1,7 @@
 import csv
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import matplotlib.dates  as mdates
+import matplotlib.units as munits
 import numpy as np
 
 def main():
@@ -8,13 +10,12 @@ def main():
     #file_path = input("Input file path for csv file: ")
 
     titles, dates = get_info("NVH.csv")
-
+   
     watched = list_watched_titles(titles)
     
     print(f"Unique titles watched: ", len(watched))
+    plot_shows_watched_by_month(titles, dates)
     
-    for titles in watched:
-        print(titles)
 
 
 def get_info(netflix_view_hist):
@@ -30,23 +31,45 @@ def get_info(netflix_view_hist):
         for row in reader:
             titles.append(row['Title'])
             dates.append(row['Date'])
-
-
+    
+    dates = parse_date(dates)
+    
     return titles, dates
 
 
 
 # Use function to get view by month or year, maybe days
-def parse_date(date):
-    month, day, year = date.split("/")
-    return f"{year}-{month}-{day}"
+def parse_date(dates):
+    formatted_dates = []
+    for date in dates:
+        month, day, year = date.split("/")
+        formatted_dates.append(f"20{year}-{month}-{day}")
+    formatted_dates.reverse()
+    print(formatted_dates)
+    return formatted_dates
 
 
-def plot_shows_watched_by_month():
+def plot_shows_watched_by_month(titles, dates):
+    unique_dates = []
+    counts_per_date = []
+    for date in dates:
+            if date == dates[len(dates)-1] and date in unique_dates:
+                count_for_date += 1
+                counts_per_date.append(count_for_date)
+            
+            if date in unique_dates:
+                count_for_date += 1
+            elif len(unique_dates) > len(counts_per_date):
+                counts_per_date.append(count_for_date)
+            else:
+                unique_dates.append(date)
+                count_for_date = 1
 
-
-    plt.plot[dates]
-
+            
+    
+    print(len(unique_dates), " --- ", len(counts_per_date))
+    plt.plot(dates, counts_per_date)
+    plt.savefig("test.png")
 
 # Use function to get all shows, maybe show repeat viewings
 def list_watched_titles(list_of_titles):
@@ -64,6 +87,8 @@ def list_watched_titles(list_of_titles):
             continue
 
         # FIXME Only name of episode gets counted as unique
+        # FIXME Some shows get season as well
+
         # Assign part before the keyword
         if len(split_title) > 2: 
             for keyword in title_keywords:
