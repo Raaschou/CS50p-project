@@ -10,12 +10,17 @@ def main():
     titles, dates = get_info("NVH.csv")
 
     watched = list_watched_titles(titles)
+    
+    print(f"Unique titles watched: ", len(watched))
+    
+    for titles in watched:
+        print(titles)
 
 
 def get_info(netflix_view_hist):
     # Use DictReader to extract data from csv file
     # Encoding is workaround for error, that was not thrown when using cs50.dev
-    with open(netflix_view_hist, encoding="cp437") as csvfile:
+    with open(netflix_view_hist, encoding="utf-8") as csvfile:
         
         reader = csv.DictReader(csvfile)
 
@@ -46,14 +51,40 @@ def plot_shows_watched_by_month():
 # Use function to get all shows, maybe show repeat viewings
 def list_watched_titles(list_of_titles):
     watched = []
-    for title in list_of_titles:
+    # Reorder list in order of viewing
+    list_of_titles.reverse()
+    
+    for title in list_of_titles[1:]:
 
         split_title = title.split(":")
+        title_keywords = ["Season", "Volume", "Series", "Limited Series"]
+        
+        # Skip missing data
+        if split_title[0] == " ":
+            continue
 
+        # FIXME Only name of episode gets counted as unique
+        # Assign part before the keyword
+        if len(split_title) > 2: 
+            for keyword in title_keywords:
+                for part in split_title:
+                    if keyword in part:
+                        processed_title = ":".join(split_title[:split_title.index(part)]).strip()
+            
+            if processed_title not in watched:
+                watched.append(processed_title)
+        else:
+            watched.append(title)
+        
+    
+    
 
-        if split_title[0] not in watched:
-            watched.append(split_title[0])
-
+    with open("watched.txt", "w", encoding="utf-8") as file:
+            
+            count = 1
+            for titles in watched:
+                file.write(f"{count} - {titles}\n")
+                count += 1
     return watched
 
 
