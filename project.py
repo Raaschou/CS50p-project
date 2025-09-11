@@ -53,22 +53,35 @@ def plot_shows_watched_by_month(titles, dates):
     unique_dates = []
     counts_per_date = []
     for date in dates:
-            if date == dates[len(dates)-1] and date in unique_dates:
-                count_for_date += 1
+            # if date == dates[len(dates)-1] and date in unique_dates:
+            #     count_for_date += 1
+            #     counts_per_date.append(count_for_date)
+          
+        if date in unique_dates:
+            count_for_date += 1
+        
+        else:
+            if unique_dates:
                 counts_per_date.append(count_for_date)
-            
-            if date in unique_dates:
-                count_for_date += 1
-            elif len(unique_dates) > len(counts_per_date):
-                counts_per_date.append(count_for_date)
-            else:
-                unique_dates.append(date)
-                count_for_date = 1
+            unique_dates.append(date)
+            count_for_date = 1
 
+    counts_per_date.append(count_for_date)
             
     
     print(len(unique_dates), " --- ", len(counts_per_date))
-    plt.plot(dates, counts_per_date)
+    
+    # FIXME Put this someplace else
+    plt.figure(figsize=(15, 8))
+    plt.bar(unique_dates, counts_per_date,width=1.2)
+    
+    plt.xticks(rotation=45)
+    interval = max(1, len(unique_dates) // 20)  # Choose to show about 20 ticks
+    plt.xticks(unique_dates[::interval])
+    plt.xlabel('Dates')
+    plt.ylabel('Episodes Watched')
+    plt.title('Episode Watched by Month')
+    plt.tight_layout() 
     plt.savefig("test.png")
 
 # Use function to get all shows, maybe show repeat viewings
