@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates  as mdates
 import matplotlib.units as munits
 import numpy as np
+import pandas as pd
+import datetime as dt
 
 def main():
     # Get file path from user
@@ -14,7 +16,7 @@ def main():
     watched = list_watched_titles(titles)
     
     print(f"Unique titles watched: ", len(watched))
-    plot_shows_watched_by_month(titles, dates)
+    plot_shows_watched_by_day(titles, dates)
     
 
 
@@ -39,17 +41,19 @@ def get_info(netflix_view_hist):
 
 
 # Use function to get view by month or year, maybe days
+# TODO Makes this using pandas?
 def parse_date(dates):
     formatted_dates = []
     for date in dates:
         month, day, year = date.split("/")
         formatted_dates.append(f"20{year}-{month}-{day}")
     formatted_dates.reverse()
-    print(formatted_dates)
     return formatted_dates
 
 
-def plot_shows_watched_by_month(titles, dates):
+def plot_shows_watched_by_day(titles, dates):
+    
+    # TODO Add days where nothing was watched
     unique_dates = []
     counts_per_date = []
     for date in dates:
@@ -71,17 +75,18 @@ def plot_shows_watched_by_month(titles, dates):
     
     print(len(unique_dates), " --- ", len(counts_per_date))
     
+    
     # FIXME Put this someplace else
     plt.figure(figsize=(15, 8))
-    plt.bar(unique_dates, counts_per_date,width=1.2)
+    plt.bar(unique_dates, counts_per_date,width=0.5)
     
-    plt.xticks(rotation=45)
     interval = max(1, len(unique_dates) // 20)  # Choose to show about 20 ticks
-    plt.xticks(unique_dates[::interval])
+    plt.xticks(unique_dates[::interval], rotation=45)
     plt.xlabel('Dates')
     plt.ylabel('Episodes Watched')
     plt.title('Episode Watched by Month')
-    plt.tight_layout() 
+    plt.margins(0.0, 0) # TODO Decide margins
+    #plt.tight_layout() 
     plt.savefig("test.png")
 
 # Use function to get all shows, maybe show repeat viewings
